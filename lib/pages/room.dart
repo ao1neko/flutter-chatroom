@@ -8,10 +8,10 @@ import 'dart:io';
 import 'package:path/path.dart';
 
 class Room extends StatefulWidget{
-  final String roomname;
-  Room(this.roomname);
+  final String roomname,account_name;
+  Room(this.roomname,this.account_name);
 
-  RoomState createState()=>RoomState(roomname);
+  RoomState createState()=>RoomState(roomname,account_name);
 }
 
 class RoomState extends State<Room>{
@@ -19,8 +19,8 @@ class RoomState extends State<Room>{
   var _image;
   final Directory tempDir = Directory.systemTemp;
 
-  final String roomname;
-  RoomState(this.roomname);
+  final String roomname,account_name;
+  RoomState(this.roomname,this.account_name);
 
   Widget textlist (BuildContext context){
     return StreamBuilder<QuerySnapshot>(
@@ -43,11 +43,21 @@ class RoomState extends State<Room>{
 
   Widget buildlistitem(BuildContext context,DocumentSnapshot snapshot){
     Map<String, dynamic> person_map=snapshot.data;
-    return ListTile(
-      leading: Icon(Icons.play_arrow,),
-      title: Text(person_map['text']),
-    );
+    if(person_map["type"]=="text"){
+      return ListTile(
+        leading: Icon(Icons.play_arrow,),
+        title: Column(
+          children: <Widget>[
+            Text(person_map["name"]),
+            Text(person_map['text']),
+          ],
+        ),
+      );
+    }else if(person_map["type"]=="image"){
+      return Image.network(person_map["text"]);
+    }
   }
+
   @override
   void dispose() {
     myController.dispose();
@@ -69,7 +79,8 @@ class RoomState extends State<Room>{
     StorageUploadTask uploadTask = ref.putFile(_image);
     StorageTaskSnapshot taskSnapshot =await uploadTask.onComplete;
     String url= await taskSnapshot.ref.getDownloadURL();
-
+    print(url);
+    Firestore.instance.collection(roomname).document(DateTime.now().toString()).setData({'name': "test","text":url,"type":"image"});
     setState(() {
       Scaffold.of(context).showSnackBar(SnackBar(content: Text('Profile Picture Uploaded')));
     });
@@ -89,11 +100,12 @@ class RoomState extends State<Room>{
         child: Center(
           child: Column(
             children: <Widget>[
+              Text(account_name),
               textlist(context),
               TextField(controller: myController,),
               FlatButton(
                 onPressed: (){
-                  Firestore.instance.collection(roomname).document(DateTime.now().toString()).setData({'name': "test","text":myController.text});
+                  Firestore.instance.collection(roomname).document(DateTime.now().toString()).setData({'name': "test","text":myController.text,"type":"text"});
                 },
                 child: Text("talk"),
               ),

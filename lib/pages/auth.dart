@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-
+import './create_room.dart';
 
 
 class Auth extends StatefulWidget{
@@ -13,6 +13,7 @@ class Auth extends StatefulWidget{
 class AuthState extends State<Auth>{
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn googleSignIn = GoogleSignIn();
+  String account_name="";
 
   Future<void> signInWithGoogle() async {
     final GoogleSignInAccount googleSignInAccount = await googleSignIn.signIn();
@@ -30,6 +31,7 @@ class AuthState extends State<Auth>{
     assert(await user.getIdToken() != null);
 
     final FirebaseUser currentUser = await _auth.currentUser();
+    account_name=currentUser.uid;
     assert(user.uid == currentUser.uid);
 
   }
@@ -59,7 +61,9 @@ class AuthState extends State<Auth>{
               RaisedButton(
                 onPressed:  () {
                   signInWithGoogle().whenComplete(() {
-                    Navigator.pushNamed(context, '/createroom');
+                    Navigator.push(context,
+                      MaterialPageRoute(builder: (BuildContext context) => CreateRoom(account_name),),
+                    );
                   });
                 },
                 child: Text("sign in"),

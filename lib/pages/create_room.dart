@@ -8,7 +8,8 @@ import 'dart:async';
 
 class CreateRoom extends StatelessWidget {
   final myController = TextEditingController();
-
+  final String account_name;
+  CreateRoom(this.account_name);
 
   Widget roomlist (BuildContext context){
     return StreamBuilder<QuerySnapshot>(
@@ -33,7 +34,7 @@ class CreateRoom extends StatelessWidget {
     return GestureDetector(
         onTap: (){
           Navigator.push(context,
-            MaterialPageRoute(builder: (BuildContext context) => Room(person_map['name']),),
+            MaterialPageRoute(builder: (BuildContext context) => Room(person_map['name'],account_name),),
           );
         },
         child:ListTile(
@@ -80,7 +81,7 @@ class CreateRoom extends StatelessWidget {
               FlatButton(
                 onPressed: (){
                   Firestore.instance.collection('rooms').document(DateTime.now().toString()).setData({'name': myController.text});
-                  Firestore.instance.collection(myController.text).document(DateTime.now().toString()).setData({'name': "bot","text":"roomが作成されました"});
+                  Firestore.instance.collection(myController.text).document(DateTime.now().toString()).setData({'name': "bot","text":"roomが作成されました","type":"text"});
                 },
                 child: Text("create room"),
               )
