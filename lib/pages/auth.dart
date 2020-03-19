@@ -14,6 +14,7 @@ class AuthState extends State<Auth>{
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn googleSignIn = GoogleSignIn();
   String account_name="";
+  String account_id="";
 
   Future<void> signInWithGoogle() async {
     final GoogleSignInAccount googleSignInAccount = await googleSignIn.signIn();
@@ -31,7 +32,9 @@ class AuthState extends State<Auth>{
     assert(await user.getIdToken() != null);
 
     final FirebaseUser currentUser = await _auth.currentUser();
-    account_name=currentUser.uid;
+    account_id=currentUser.uid;
+    account_name=currentUser.displayName;
+
     assert(user.uid == currentUser.uid);
 
   }
@@ -62,7 +65,7 @@ class AuthState extends State<Auth>{
                 onPressed:  () {
                   signInWithGoogle().whenComplete(() {
                     Navigator.push(context,
-                      MaterialPageRoute(builder: (BuildContext context) => CreateRoom(account_name),),
+                      MaterialPageRoute(builder: (BuildContext context) => CreateRoom(account_id,account_name),),
                     );
                   });
                 },

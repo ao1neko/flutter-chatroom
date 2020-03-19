@@ -4,12 +4,12 @@ import 'package:flutter/services.dart';
 import './room.dart';
 import 'dart:async';
 
-
+import './edit.dart';
 
 class CreateRoom extends StatelessWidget {
   final myController = TextEditingController();
-  final String account_name;
-  CreateRoom(this.account_name);
+  final String account_name,account_id;
+  CreateRoom(this.account_id,this.account_name);
 
   Widget roomlist (BuildContext context){
     return StreamBuilder<QuerySnapshot>(
@@ -34,7 +34,7 @@ class CreateRoom extends StatelessWidget {
     return GestureDetector(
         onTap: (){
           Navigator.push(context,
-            MaterialPageRoute(builder: (BuildContext context) => Room(person_map['name'],account_name),),
+            MaterialPageRoute(builder: (BuildContext context) => Room(person_map['name'],account_id,account_name),),
           );
         },
         child:ListTile(
@@ -84,6 +84,14 @@ class CreateRoom extends StatelessWidget {
                   Firestore.instance.collection(myController.text).document(DateTime.now().toString()).setData({'name': "bot","text":"roomが作成されました","type":"text"});
                 },
                 child: Text("create room"),
+              ),
+              RaisedButton(
+                onPressed: (){
+                  Navigator.push(context,
+                    MaterialPageRoute(builder: (BuildContext context) => Edit(account_id,account_name),),
+                  );
+                },
+                child:Text("edit pro"),
               )
             ],
           ),

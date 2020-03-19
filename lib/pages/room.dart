@@ -8,10 +8,10 @@ import 'dart:io';
 import 'package:path/path.dart';
 
 class Room extends StatefulWidget{
-  final String roomname,account_name;
-  Room(this.roomname,this.account_name);
+  final String roomname,account_name,account_id;
+  Room(this.roomname,this.account_id,this.account_name);
 
-  RoomState createState()=>RoomState(roomname,account_name);
+  RoomState createState()=>RoomState(roomname,account_id,account_name);
 }
 
 class RoomState extends State<Room>{
@@ -19,8 +19,61 @@ class RoomState extends State<Room>{
   var _image;
   final Directory tempDir = Directory.systemTemp;
 
-  final String roomname,account_name;
-  RoomState(this.roomname,this.account_name);
+  final String roomname,account_name,account_id;
+  RoomState(this.roomname,this.account_id,this.account_name);
+
+
+  Widget accounttextlist (BuildContext context,String id,String type,String text){
+    return StreamBuilder<QuerySnapshot>(
+      stream: Firestore.instance.collection(id).snapshots(),
+      builder: (context,snapshot){
+        return accountbuildlist(context,snapshot.data.documents,type,text);
+      },
+    );
+  }
+
+  Widget accountbuildlist(BuildContext context, List<DocumentSnapshot> snapshot,String type,String text){
+    return ListView(
+      scrollDirection:  Axis.vertical,
+      shrinkWrap: true,
+      padding: EdgeInsets.all(11.0),
+      children: snapshot.map((data)=> accountbuildlistitem(context,data,type,text)).toList(),
+      reverse: false,
+    );
+  }
+
+  Widget accountbuildlistitem(BuildContext context,DocumentSnapshot snapshot,String type,String text){
+    Map<String, dynamic> person_map=snapshot.data;
+
+    if(type=="image"){
+      return Row(
+        children: <Widget>[
+          Column(
+            children: <Widget>[
+              Container(child:Image.network(person_map["path"],width: 50.0,height: 20.0,fit:BoxFit.contain)),
+              Text(person_map["name"],style: TextStyle(fontSize: 10.0),),
+            ],
+          ),
+          Image.network(text,width: 200.0,height: 100.0,fit:BoxFit.contain),
+        ],
+      );
+    }else if(type=="text"){
+      return Row(
+        textDirection:TextDirection.rtl,
+        children: <Widget>[
+          Column(
+            children: <Widget>[
+              Container(child:Image.network(person_map["path"],width: 50.0,height: 20.0,fit:BoxFit.contain)),
+              Text(person_map["name"],style: TextStyle(fontSize: 10.0),),
+            ],
+          ),
+          Text(text),
+        ],
+      );
+    }
+  }
+
+
 
   Widget textlist (BuildContext context){
     return StreamBuilder<QuerySnapshot>(
@@ -43,21 +96,7 @@ class RoomState extends State<Room>{
 
   Widget buildlistitem(BuildContext context,DocumentSnapshot snapshot){
     Map<String, dynamic> person_map=snapshot.data;
-    if(person_map["type"]=="text"){
-      return Row(
-        children: <Widget>[
-          Text(person_map["name"]),
-          Text(person_map["text"]),
-        ],
-      );
-    }else if(person_map["type"]=="image"){
-      return Row(
-        children: <Widget>[
-          Text(person_map["name"]),
-          Image.network(person_map["text"],fit: BoxFit.contain),
-        ],
-      );
-    }
+      return accounttextlist(context,person_map["name"],person_map["type"],person_map["text"]);
   }
 
   @override
@@ -82,7 +121,7 @@ class RoomState extends State<Room>{
     StorageTaskSnapshot taskSnapshot =await uploadTask.onComplete;
     String url= await taskSnapshot.ref.getDownloadURL();
     print(url);
-    Firestore.instance.collection(roomname).document(DateTime.now().toString()).setData({'name': account_name,"text":url,"type":"image"});
+    Firestore.instance.collection(roomname).document(DateTime.now().toString()).setData({'name': account_id,"text":url,"type":"image"});
     setState(() {
       Scaffold.of(context).showSnackBar(SnackBar(content: Text('Profile Picture Uploaded')));
     });
@@ -106,7 +145,7 @@ class RoomState extends State<Room>{
               TextField(controller: myController,),
               FlatButton(
                 onPressed: (){
-                  Firestore.instance.collection(roomname).document(DateTime.now().toString()).setData({'name': account_name,"text":myController.text,"type":"text"});
+                  Firestore.instance.collection(roomname).document(DateTime.now().toString()).setData({'name': account_id,"text":myController.text,"type":"text"});
                 },
                 child: Text("talk"),
               ),
