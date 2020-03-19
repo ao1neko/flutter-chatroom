@@ -44,17 +44,19 @@ class RoomState extends State<Room>{
   Widget buildlistitem(BuildContext context,DocumentSnapshot snapshot){
     Map<String, dynamic> person_map=snapshot.data;
     if(person_map["type"]=="text"){
-      return ListTile(
-        leading: Icon(Icons.play_arrow,),
-        title: Column(
-          children: <Widget>[
-            Text(person_map["name"]),
-            Text(person_map['text']),
-          ],
-        ),
+      return Row(
+        children: <Widget>[
+          Text(person_map["name"]),
+          Text(person_map["text"]),
+        ],
       );
     }else if(person_map["type"]=="image"){
-      return Image.network(person_map["text"]);
+      return Row(
+        children: <Widget>[
+          Text(person_map["name"]),
+          Image.network(person_map["text"],fit: BoxFit.contain),
+        ],
+      );
     }
   }
 
@@ -80,7 +82,7 @@ class RoomState extends State<Room>{
     StorageTaskSnapshot taskSnapshot =await uploadTask.onComplete;
     String url= await taskSnapshot.ref.getDownloadURL();
     print(url);
-    Firestore.instance.collection(roomname).document(DateTime.now().toString()).setData({'name': "test","text":url,"type":"image"});
+    Firestore.instance.collection(roomname).document(DateTime.now().toString()).setData({'name': account_name,"text":url,"type":"image"});
     setState(() {
       Scaffold.of(context).showSnackBar(SnackBar(content: Text('Profile Picture Uploaded')));
     });
@@ -100,12 +102,11 @@ class RoomState extends State<Room>{
         child: Center(
           child: Column(
             children: <Widget>[
-              Text(account_name),
               textlist(context),
               TextField(controller: myController,),
               FlatButton(
                 onPressed: (){
-                  Firestore.instance.collection(roomname).document(DateTime.now().toString()).setData({'name': "test","text":myController.text,"type":"text"});
+                  Firestore.instance.collection(roomname).document(DateTime.now().toString()).setData({'name': account_name,"text":myController.text,"type":"text"});
                 },
                 child: Text("talk"),
               ),

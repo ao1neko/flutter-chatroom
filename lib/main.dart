@@ -14,7 +14,7 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/':(context)=> Auth(),
-        '/createroom':(context)=>CreateRoom(),
+        '/createroom':(context)=>CreateRoom("bot"),
       },
     );
   }
