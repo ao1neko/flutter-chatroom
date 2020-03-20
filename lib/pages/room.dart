@@ -47,6 +47,7 @@ class RoomState extends State<Room>{
 
     if(type=="image"){
       return Row(
+        textDirection:account_name==person_map["name"]?TextDirection.rtl:TextDirection.ltr,
         children: <Widget>[
           Column(
             children: <Widget>[
@@ -59,7 +60,7 @@ class RoomState extends State<Room>{
       );
     }else if(type=="text"){
       return Row(
-        textDirection:TextDirection.rtl,
+        textDirection:account_name==person_map["name"]?TextDirection.rtl:TextDirection.ltr,
         children: <Widget>[
           Column(
             children: <Widget>[
