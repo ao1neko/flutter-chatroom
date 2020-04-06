@@ -1,10 +1,9 @@
 # mychat
 
 A new Flutter application.  
-![参考画像](https://raw.github.com/wiki/ao1neko/flutter-chatroom/room.png)
-![参考画像](https://raw.github.com/wiki/ao1neko/flutter-chatroom/edit.jpg)
-![参考画像](https://raw.github.com/wiki/ao1neko/flutter-chatroom/aut.jpg)
-<img src="https://raw.github.com/wiki/ao1neko/flutter-chatroom/aut.jpg" width="100">
+<img src="https://raw.github.com/wiki/ao1neko/flutter-chatroom/room.jpg" width="200">
+<img src="https://raw.github.com/wiki/ao1neko/flutter-chatroom/edit.jpg" width="200">
+<img src="https://raw.github.com/wiki/ao1neko/flutter-chatroom/aut.jpg" width="200">
 
 
 
